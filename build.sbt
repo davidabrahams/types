@@ -74,4 +74,4 @@ scalafmtOnCompile := true
 
 // To learn more about multi-project builds, head over to the official sbt
 // documentation at http://www.scala-sbt.org/documentation.html
-mainClass in (Compile, run) := Some("If")
+mainClass in (Compile, run) := Some("Peano")
