@@ -10,21 +10,29 @@ object Peano {
     // a type level function that folds over ints
     // we must provide a two argument type constructor to fold each int
     // into Up
-    type FoldR[Init <: Up, Fold[Up, Nat] <: Up, Up] <: Up
+    type FoldR[Init <: Up, FoldFunc[Up, Nat] <: Up, Up] <: Up
   }
+
+  sealed trait FoldFunc[-Acc, +Val] {
+    type Apply[Acc, Val] <: Val
+  }
+
   sealed trait _0 extends Nat {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = IfZero
     type Compare[N <: Nat] = N#Match[ConstLT, EQ, Comparison]
     // base case
-    type FoldR[Init <: Up, Fold[Up, Nat] <: Up, Up] = Init
+    type FoldR[Init <: Up, FoldFunc[Up, Nat] <: Up, Up] = Init
   }
   sealed trait Succ[N <: Nat] extends Nat {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = NonZero[N]
     // if M is NonZero, we compare (M-1) to N. Otherwise return GT
     type Compare[M <: Nat] = M#Match[N#Compare, GT, Comparison]
-    type FoldR[Init <: Up, Fold[Up, Nat] <: Up, Up] =
-      Fold[N#FoldR[Init, Fold, Up], Succ[N]]
+    type FoldR[Init <: Up, Func <: FoldFunc[Up, Nat], Up] =
+      Func#Apply[N#FoldR[Init, Func, Up], Succ[N]]
   }
+
+  // type Increment[N <: Nat, M <: Nat] = Succ[N]
+  // type Add[N <: Nat, M <: Nat] = M#FoldR[N, Increment, Nat]
 
   // the comparison type indicates whether on type is less than another type, and can produce
   // a type via #Match
