@@ -35,7 +35,6 @@ libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"
 
 wartremoverErrors ++= Warts.allBut(Wart.NonUnitStatements)
 wartremoverWarnings ++= Seq(Wart.NonUnitStatements)
-scalafmtOnCompile := true
 
 // You can use Scaladex, an index of all known published Scala libraries. There,
 // after you find the library you want, you can just copy/paste the dependency

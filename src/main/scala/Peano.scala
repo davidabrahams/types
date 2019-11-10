@@ -7,15 +7,23 @@ object Peano {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] <: Up
     // a type level function to compare Nats
     type Compare[N <: Nat] <: Comparison
+    // a type level function that folds over ints
+    // we must provide a two argument type constructor to fold each int
+    // into Up
+    type FoldR[Init <: Up, Fold[Up, Nat] <: Up, Up] <: Up
   }
   sealed trait _0 extends Nat {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = IfZero
     type Compare[N <: Nat] = N#Match[ConstLT, EQ, Comparison]
+    // base case
+    type FoldR[Init <: Up, Fold[Up, Nat] <: Up, Up] = Init
   }
   sealed trait Succ[N <: Nat] extends Nat {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = NonZero[N]
     // if M is NonZero, we compare (M-1) to N. Otherwise return GT
     type Compare[M <: Nat] = M#Match[N#Compare, GT, Comparison]
+    type FoldR[Init <: Up, Fold[Up, Nat] <: Up, Up] =
+      Fold[N#FoldR[Init, Fold, Up], Succ[N]]
   }
 
   // the comparison type indicates whether on type is less than another type, and can produce
@@ -57,5 +65,6 @@ object Peano {
     implicitly[_3#Compare[_5]#lt =:= True]
     implicitly[_5#Compare[_3]#lt =:= False]
     implicitly[_3#Compare[_3]#le =:= True]
+    println("Success!")
   }
 }
