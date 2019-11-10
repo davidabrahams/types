@@ -33,7 +33,8 @@ libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0"
 // TIP: To find the "dependency" that you need to add to the
 // `libraryDependencies` set, which in the above example looks like this:
 
-wartremoverErrors ++= Warts.all
+wartremoverErrors ++= Warts.allBut(Wart.NonUnitStatements)
+wartremoverWarnings ++= Seq(Wart.NonUnitStatements)
 scalafmtOnCompile := true
 
 // You can use Scaladex, an index of all known published Scala libraries. There,
@@ -73,3 +74,4 @@ scalafmtOnCompile := true
 
 // To learn more about multi-project builds, head over to the official sbt
 // documentation at http://www.scala-sbt.org/documentation.html
+mainClass in (Compile, run) := Some("If")
