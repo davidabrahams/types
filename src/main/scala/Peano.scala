@@ -10,7 +10,7 @@ object Peano {
     // a type level function that folds over ints
     // we must provide a two argument type constructor to fold each int
     // into Up
-    type FoldR[Init <: Up, Func <: FoldFunc[Up, Nat], Up] <: Up
+    type FoldR[Init <: Acc, Func <: FoldFunc[Acc, Nat], Acc] <: Acc
   }
 
   // a little weird, FoldFunc[A, B] is a type with a type-function (A, B) => B
@@ -25,7 +25,7 @@ object Peano {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = IfZero
     type Compare[N <: Nat] = N#Match[ConstLT, EQ, Comparison]
     // base case
-    type FoldR[Init <: Up, Func <: FoldFunc[Up, Nat], Up] = Init
+    type FoldR[Init <: Acc, Func <: FoldFunc[Acc, Nat], Acc] = Init
   }
   sealed trait Succ[N <: Nat] extends Nat {
     type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = NonZero[N]
@@ -33,8 +33,8 @@ object Peano {
     // if M is Zero, return GT
     // if M is NonZero, we compare (M-1) to N.
     type Compare[M <: Nat] = M#Match[N#Compare, GT, Comparison]
-    type FoldR[Init <: Up, Func <: FoldFunc[Up, Nat], Up] =
-      Func#Apply[N#FoldR[Init, Func, Up], Succ[N]]
+    type FoldR[Init <: Acc, Func <: FoldFunc[Acc, Nat], Acc] =
+      Func#Apply[N#FoldR[Init, Func, Acc], Succ[N]]
   }
 
   type Increment = FoldFunc[Nat, Nat] {
