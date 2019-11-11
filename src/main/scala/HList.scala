@@ -1,4 +1,4 @@
-sealed trait Fold[Acc, -Val] {
+trait Fold[Acc, -Val] {
   type Apply[A <: Acc, V <: Val] <: Acc
   def apply[A <: Acc, V <: Val](a: A, v: V): Apply[A, V]
 }
@@ -27,19 +27,20 @@ object HList {
 import HList._
 
 final case class HCons[H, T <: HList](head: H, tail: T) extends HList {
+  def ::[T0](v: T0) = HCons(v, this)
+
   type Foldr[Init <: Acc, F <: Fold[Acc, Any], Acc] =
     F#Apply[T#Foldr[Init, F, Acc], H]
-  def ::[T0](v: T0) = HCons(v, this)
   def foldr[Init <: Acc, F <: Fold[Acc, Any], Acc](
       init: Init,
       fold: F
   ): Foldr[Init, F, Acc] =
-    fold.apply[Acc, H](tail.foldr[Init, F, Acc](init, fold), head)
+    fold.apply(tail.foldr[Init, F, Acc](init, fold), head)
 }
 
 sealed trait HNil extends HList {
-  type Foldr[Init <: Acc, F <: Fold[Acc, Any], Acc] = Init
   def ::[T](v: T) = HCons(v, this)
+  type Foldr[Init <: Acc, F <: Fold[Acc, Any], Acc] = Init
   def foldr[Init <: Acc, F <: Fold[Acc, Any], Acc](
       init: Init,
       fold: F
